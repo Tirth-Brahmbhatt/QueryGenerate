@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="InventoryModelStoreContainer" CdmEntityContainer="InventoryEntities">
+    <EntitySetMapping Name="Products">
+      <EntityTypeMapping TypeName="InventoryModel.Product">
+        <MappingFragment StoreEntitySet="Product">
+          <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+          <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+          <ScalarProperty Name="ProductType" ColumnName="ProductType" />
+          <ScalarProperty Name="ProductManufacture" ColumnName="ProductManufacture" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Stocks">
+      <EntityTypeMapping TypeName="InventoryModel.Stock">
+        <MappingFragment StoreEntitySet="Stock">
+          <ScalarProperty Name="StockId" ColumnName="StockId" />
+          <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+          <ScalarProperty Name="ProductQty" ColumnName="ProductQty" />
+          <ScalarProperty Name="Productprice" ColumnName="Productprice" />
+          <ScalarProperty Name="StockDate" ColumnName="StockDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="Select_Table" FunctionName="InventoryModel.Store.Select_Table">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="InventoryModel.Select_Table_Result">
+          <ScalarProperty Name="COLUMN_NAME" ColumnName="COLUMN_NAME" />
+          <ScalarProperty Name="DATA_TYPE" ColumnName="DATA_TYPE" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="Where_Cond" FunctionName="InventoryModel.Store.Where_Cond">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="InventoryModel.Where_Cond_Result">
+          <ScalarProperty Name="StockId" ColumnName="StockId" />
+          <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+          <ScalarProperty Name="ProductQty" ColumnName="ProductQty" />
+          <ScalarProperty Name="Productprice" ColumnName="Productprice" />
+          <ScalarProperty Name="StockDate" ColumnName="StockDate" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="Final_Query" FunctionName="InventoryModel.Store.Final_Query" />
+    <FunctionImportMapping FunctionImportName="Demo_proc" FunctionName="InventoryModel.Store.Demo_proc">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="InventoryModel.Demo_proc_Result" />
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="Demo_whe" FunctionName="InventoryModel.Store.Demo_whe" />
+    <FunctionImportMapping FunctionImportName="SelectCol1" FunctionName="InventoryModel.Store.SelectCol1">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="InventoryModel.SelectCol1_Result">
+          <ScalarProperty Name="TABLE_NAME" ColumnName="TABLE_NAME" />
+          <ScalarProperty Name="COLUMN_NAME" ColumnName="COLUMN_NAME" />
+          <ScalarProperty Name="DATA_TYPE" ColumnName="DATA_TYPE" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="AllJoin" FunctionName="InventoryModel.Store.AllJoin" />
+    <FunctionImportMapping FunctionImportName="AllOne" FunctionName="InventoryModel.Store.AllOne" />
+  </EntityContainerMapping>
+</Mapping>

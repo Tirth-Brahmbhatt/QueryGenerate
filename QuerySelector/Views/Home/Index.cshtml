@@ -1,0 +1,814 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<!Doctype html>
+<head>
+    <meta name="viewport" content="width = device-width" />
+    <title>Index</title>
+</head>
+<body style="border:20px solid #C0C0C0">
+    <div>
+        <div class="col-sm-4">
+            @using (Html.BeginForm())
+            {
+
+                <table class="table table-striped table-bordered" style="border: 1px solid ">
+                    <tr><td><input type="text" id="TableName" name="tablename" /></td></tr>
+                    <tr><td><input type="button" id="btnSubmit" value="Add" style="background-color : cornflowerblue" /> </td></tr>
+                    
+                    <tr><td><input type="button" id="Execw" value="ExecWithWhere" style="background-color : cornflowerblue" /> </td></tr>
+
+
+                </table>
+                <div>
+                    <table class="table-striped table-bordered" id="tablen" style="border : 1px solid orange">
+                        <tr>
+                            <td>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+
+            }
+        </div>
+        <div class="v1" style="border: 1px solid #C0C0C0; height: 750px ; position : absolute ; margin-left : 380px">
+
+        </div>
+        <div class="col-sm-4">
+            <table class="table table-striped table-bordered" id="mytable1" style="border: 1px solid ; background-color : lightgray ; cursor: pointer" >
+                <tr class="bg-info">
+                    <th>
+                        Table
+                    </th>
+                    <th>
+                        Column
+                    </th>
+                </tr>
+                <tbody id="mytable" style="cursor: pointer;">
+                    <tr>
+                        <td> </td>
+                        <td>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="v2" style="border: 1px solid #C0C0C0; height: 750px ; position : absolute ; margin-left : 760px">
+
+        </div>
+        <div class="col-sm-4">
+            <table class="table table-striped table-bordered" style="border : 1px solid black">
+                <tr>
+                    <td>
+                        SELECT
+                    </td>
+                </tr>
+                <tr> 
+                   <td>
+                        <textarea rows="3" cols="50" id="select"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        FROM
+                    </td>
+                </tr>
+                <tr>
+                    <td id="fromm">
+                        <input type="radio" name="joins" value="InnerJoin" id="inner" checked />inner Join
+                        <input type="radio" name="joins" value="LeftJoin" id="left" />Left Join
+                        <input type="radio" name="joins" value="Right-Join" id="right" />Right Join
+                        <button type="button" id="reloder" >
+                            Submit
+                        </button>
+
+                        <textarea rows="3" cols="50" id="from"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        WHERE
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <textarea rows="4" cols="50" id="where"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        SHORT BY
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea rows="2" cols="50" id="sort"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        ORDER BY
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea rows="2" cols="50" id="group"></textarea>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+    <div class="modal fade " tabindex="-1" role="dialog" id="dynamicGrid" aria-hidden="true" >
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Query Generator</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body table-bordered table-striped" >
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr id="dynamicTableHead">
+                                
+                            </tr>
+                        </thead>
+                        <tbody id="dynamicTableBody" class="table table-striped table-bordered table-condensed">
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="dismiss">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="divContainer">
+
+    </div>
+</body>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script>
+   
+    var myArray = [];
+    var MyArray1 = [];
+    var tabN = [];
+   
+   
+    
+    $(document).ready(function () {
+        $("#btnSubmit").click(function () {
+
+
+            $.ajax({
+
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                url: "/api/GetTableData/GetTable/" + $("#TableName").val(),
+                success: function (data) {
+                    myArray = data;
+                    console.log(myArray);
+                    tabN = $("#TableName").val();
+                    if (tabN != null) {
+
+                        tr = $('<tr/>');
+                        tr.append("<td>" + tabN + "</td>");
+                        $('#tablen').append(tr);
+                    }
+
+                    if (tabN.indexOf("product") > -1) {
+                        document.getElementById("from").innerHTML = "Stock Stock Inner Join Product Product On Stock.StockId = Product.ProductId";
+                    }
+
+                    @*if (document.getElementById("tablen").innerHTML.indexOf("product") != -1) {
+                        document.getElementById("from").innerHTML = "hello i am runnnig";
+                    }*@
+
+
+                    var table = document.getElementById('mytable');
+                    var tr;
+                    for (var i = 0; i <= myArray.length; i++) {
+                        tr = $('<tr/>');
+                        tr.append("<td>" + myArray[i].TABLE_NAME + "</td>");
+                        tr.append("<td>" + myArray[i].COLUMN_NAME + "</td>");
+                        
+                        $('#mytable').append(tr);
+                   @* document.getElementById("from").innerHTML = $("#TableName").val()*@
+
+                    }
+
+                },
+                error: function (err) {
+                    alert("Error");
+                    console.error(err);
+                }
+
+
+            });
+        });
+
+         $("#select").click(function () {
+            var back = document.getElementById("select");
+             back.style.backgroundColor = "#cfecfa";
+           
+            $.ajax({
+                success: function () {
+                    
+                    highlight_row();
+                    function highlight_row() {
+                        var table = document.getElementById('mytable');
+                        var cells = table.getElementsByTagName('td');
+
+                        for (var i = 0; i < cells.length; i++) {
+                            // Take each cell
+                            var cell = cells[i];
+                            // do something on onclick event for cell
+                            cell.onclick = function () {
+                                // Get the row id where the cell exists
+                                var rowId = this.parentNode.rowIndex;
+
+                                var rowsNotSelected = table.getElementsByTagName('tr');
+                                for (var row = 0; row < rowsNotSelected.length; row++) {
+                                    rowsNotSelected[row].style.backgroundColor = "";
+                                    rowsNotSelected[row].classList.remove('selected');
+                                }
+                                var rowSelected = table.getElementsByTagName('tr')[rowId];
+                                rowSelected.style.backgroundColor = "#cfecfa";
+                                rowSelected.className += " selected";
+                                //document.getElementById("select").innerHTML;
+
+                                var TbName = rowSelected.cells[0].innerHTML;
+                                var msg = rowSelected.cells[1].innerHTML
+
+                                var coldata = TbName + "." + msg;
+                                var coldatat1 = ',';
+                                document.getElementById("select").innerHTML += coldata;
+                                
+                             document.getElementById("select").innerHTML += coldatat1;
+                              
+
+
+                            }
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert("error occured");
+                }
+            });
+        });
+
+
+
+
+        $("#where").click(function () {
+            var back = document.getElementById("where");
+            back.style.backgroundColor = "#cfecfa";
+            $.ajax({
+                success: function () {
+                    
+                    highlight_row();
+                    function highlight_row() {
+                        var table = document.getElementById('mytable');
+                        var cells = table.getElementsByTagName('td');
+
+                        for (var i = 0; i < cells.length; i++) {
+                            // Take each cell
+                            var cell = cells[i];
+                            // do something on onclick event for cell
+                            cell.onclick = function () {
+                                // Get the row id where the cell exists
+                                var rowId = this.parentNode.rowIndex;
+
+                                var rowsNotSelected = table.getElementsByTagName('tr');
+                                for (var row = 0; row < rowsNotSelected.length; row++) {
+                                    rowsNotSelected[row].style.backgroundColor = "";
+                                    rowsNotSelected[row].classList.remove('selected');
+                                }
+                                var rowSelected = table.getElementsByTagName('tr')[rowId];
+                                rowSelected.style.backgroundColor = "#cfecfa";
+                                rowSelected.className += " selected";
+                                //document.getElementById("select").innerHTML;
+
+                                var TbName = rowSelected.cells[0].innerHTML;
+                                var msg = rowSelected.cells[1].innerHTML
+
+                                var coldata = TbName + "." + msg;
+                                var coldatat1 = ',';
+                                document.getElementById("where").innerHTML += coldata;
+                               
+
+
+                            }
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert("error occured");
+                }
+            });
+        });
+         $("#sort").click(function () {
+            var back = document.getElementById("sort");
+            back.style.backgroundColor = "#cfecfa";
+            $.ajax({
+                success: function () {
+                    
+                    highlight_row();
+                    function highlight_row() {
+                        var table = document.getElementById('mytable');
+                        var cells = table.getElementsByTagName('td');
+
+                        for (var i = 0; i < cells.length; i++) {
+                            // Take each cell
+                            var cell = cells[i];
+                            // do something on onclick event for cell
+                            cell.onclick = function () {
+                                // Get the row id where the cell exists
+                                var rowId = this.parentNode.rowIndex;
+
+                                var rowsNotSelected = table.getElementsByTagName('tr');
+                                for (var row = 0; row < rowsNotSelected.length; row++) {
+                                    rowsNotSelected[row].style.backgroundColor = "";
+                                    rowsNotSelected[row].classList.remove('selected');
+                                }
+                                var rowSelected = table.getElementsByTagName('tr')[rowId];
+                                rowSelected.style.backgroundColor = "#cfecfa";
+                                rowSelected.className += " selected";
+                                //document.getElementById("select").innerHTML;
+
+                                var TbName = rowSelected.cells[0].innerHTML;
+                                var msg = rowSelected.cells[1].innerHTML
+
+                                var coldata = TbName + "." + msg;
+                                var coldatat1 = ',';
+                                document.getElementById("sort").innerHTML += coldata;
+                               
+
+
+                            }
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert("error occured");
+                }
+            });
+        });
+        $("#group").click(function () {
+            var back = document.getElementById("group");
+            back.style.backgroundColor = "#cfecfa";
+            $.ajax({
+                success: function () {
+                    
+                    highlight_row();
+                    function highlight_row() {
+                        var table = document.getElementById('mytable');
+                        var cells = table.getElementsByTagName('td');
+
+                        for (var i = 0; i < cells.length; i++) {
+                            // Take each cell
+                            var cell = cells[i];
+                            // do something on onclick event for cell
+                            cell.onclick = function () {
+                                // Get the row id where the cell exists
+                                var rowId = this.parentNode.rowIndex;
+
+                                var rowsNotSelected = table.getElementsByTagName('tr');
+                                for (var row = 0; row < rowsNotSelected.length; row++) {
+                                    rowsNotSelected[row].style.backgroundColor = "";
+                                    rowsNotSelected[row].classList.remove('selected');
+                                }
+                                var rowSelected = table.getElementsByTagName('tr')[rowId];
+                                rowSelected.style.backgroundColor = "#cfecfa";
+                                rowSelected.className += " selected";
+                                //document.getElementById("select").innerHTML;
+
+                                var TbName = rowSelected.cells[0].innerHTML;
+                                var msg = rowSelected.cells[1].innerHTML
+
+                                var coldata = TbName + "." + msg;
+                                var coldatat1 = ',';
+                                document.getElementById("group").innerHTML += coldata;
+                               
+
+
+                            }
+                        }
+                    }
+                },
+                error: function (err) {
+                    alert("error occured");
+                }
+            });
+        });
+
+
+
+      @*   $("#select").click(function () {
+              var back = document.getElementById("select");
+            back.style.backgroundColor = "#cfecfa";
+            $.ajax({
+                success: function () {
+                    alert("Select Col")
+                   $('#mytable').click(function myfun(i) {
+                     var wholeSelect;
+                    var $this = $(this);
+                    if ($this.hasClass('mytable')) {
+                        $this.removeClass('mytable');
+                        alert("Double click");
+
+                        var data = i.target.parentNode;
+                        var Wdata = data.querySelectorAll("td")[0].innerText;
+                        var WdataRes = data.querySelectorAll("td")[1].innerText;
+                        
+                        wholeSelect = Wdata + "." + WdataRes;
+                       
+
+                        document.getElementById("select").innerHTML += wholeSelect;
+                        document.getElementById("select").innerHTML += ',';
+                        
+                        i.preventDefault();
+                    }
+                    else {
+                        $this.addClass('mytable');
+                        setTimeout(function () {
+                            if ($this.hasClass('mytable')) {
+                                $this.removeClass('mytable');
+                                alert("Just one click!");
+                                let data = e.target.parentNode;
+                                let data1 = data.querySelectorAll("td")[0].innerText;
+                                let dataRes1 = data.querySelectorAll("td")[1].innerText;
+                                document.getElementById("from").innerHTML += data1 + "." + dataRes1;
+
+                                i.preventDefault();
+                            }
+                          }, 500);
+                        }
+                       
+                   });
+                },
+                error: function (err) {
+                    alert("error occured");
+                }
+            });
+        });
+          *@
+
+        $('#dismiss').click(function (e) {
+            var foo = document.getElementById("dynamicTableBody");
+            foo.innerHTML = '';
+
+        })
+            
+
+
+
+
+        
+
+
+
+       @* $('#mytable').click(function (e) {
+            var whole;
+                var $this = $(this);
+                if ($this.hasClass('mytable')) {
+                    $this.removeClass('mytable');
+                    alert("Double click");
+
+                   var data = e.target.parentNode;
+                    var data1 = data.querySelectorAll("td")[0].innerText;
+                    var dataRes = data.querySelectorAll("td")[1].innerText;
+                    whole = "Stock Stock Inner Join  Product Product  On " + data1 + "." + dataRes + "=";
+                    
+                    document.getElementById("from").innerHTML = whole;
+                    e.preventDefault();
+                }
+                else {
+                    $this.addClass('mytable');
+                setTimeout(function() { 
+                if ($this.hasClass('mytable')){
+                $this.removeClass('mytable'); 
+                alert("Just one click!");
+                  let data =e.target.parentNode;
+                    let data1 = data.querySelectorAll("td")[0].innerText;
+                    let dataRes1 = data.querySelectorAll("td")[1].innerText;
+                    document.getElementById("from").innerHTML += data1 + "." + dataRes1;
+                    
+                    e.preventDefault();           
+                    }
+                    }, 500);        
+                }
+            });*@
+
+
+
+        @*document.querySelector("#mytable1").addEventListener("click", event => {
+                        alert("you clickd heere");
+                        let dataTr = event.target.parentNode;
+                        let dataRes = dataTr.querySelectorAll("td")[0].innerText;
+                        dataRes += dataTr.querySelectorAll("td")[1].innerText;
+                        alert(dataRes);
+                    });*@
+
+        @*document.querySelector("#mytable1").addEventListener("ondblclick", event => {
+                        alert("double click");
+                         let dataTr = event.target.parentNode;
+                        let dataRes = dataTr.querySelectorAll("td")[0].innerText;
+                        dataRes += dataTr.querySelectorAll("td")[1].innerText;
+                        alert(dataRes);
+                       }); *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        $("#btnExec").click(function () {
+            $.ajax({
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                url: "api/GetMyCol/GetColData/" + $("#select").val(),
+                success: function (data) {
+                    var coldata = data;
+                    console.log(coldata);
+                    var table = document.getElementById('newtable');
+                    var tr;
+                    for (var i = 0; i <= coldata.length; i++) {
+                        tr = $('<tr/>');
+                        tr.append("<td>" + coldata[i].ProductQty + "</td>");
+                        tr.append("<td>" + coldata[i].Productprice + "</td>");
+                        tr.append("<td>" + coldata[i].StockId + "</td>");
+
+                        $('#newtable').append(tr);
+
+                    }
+
+
+                },
+                error: function (err) {
+                    alert("Error");
+
+                }
+
+
+            });
+
+        });
+
+      
+
+        $("#Execw").click(function () {
+            var selectCol = $("#select").val();
+            var ColName = $("#from").val();
+            var myWhere = $("#where").val();
+            var orderBy = $("#sort").val();
+            var Grpby = $("#group").val();
+            $.ajax({
+                method: "GET",
+                dataType: "json",
+                contentType: "application/json",
+                url: "/Demo/Alldone/",
+                data: { selectCol: selectCol, ColName: ColName, myWhere: myWhere, order: orderBy, GrpBy: Grpby },
+                success: function (getData) {
+
+                    var obj = getData;
+                    alert("success");
+                    console.log(obj);
+
+                    var col = [];
+                    for (var i = 0; i < obj.length; i++) {
+                        for (var key in obj[i]) {
+                            if (col.indexOf(key) === -1) {
+                                col.push(key);
+                            }
+                        }
+                    }
+
+                    // CREATE DYNAMIC TABLE.
+                    var table = document.createElement("table");
+
+                    // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+                    var tr = table.insertRow(-1);                   // TABLE ROW.
+
+                    for (var i = 0; i < col.length; i++) {
+                        var th = document.createElement("th");      // TABLE HEADER.
+                        th.innerHTML = col[i];
+                        tr.appendChild(th);
+                    }
+
+                    // ADD JSON DATA TO THE TABLE AS ROWS.
+                    for (var i = 0; i < obj.length; i++) {
+
+                        tr = table.insertRow(-1);
+
+                        for (var j = 0; j < col.length; j++) {
+                            var tabCell = tr.insertCell(-1);
+                            tabCell.innerHTML = obj[i][col[j]];
+                        }
+                    }
+
+                    $("#dynamicTableHead").append();
+                    $("#dynamicTableBody").append(table);
+
+                    jQuery("#dynamicGrid").modal('show');
+                   
+                },
+
+                error: function (err) {
+                    alert("Error");
+
+                }
+
+
+            });
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        $("#from").click(function () {
+             var back = document.getElementById("from");
+            back.style.backgroundColor = "#cfecfa";
+            var rd1 = document.getElementById("inner");
+            var rd2 = document.getElementById("left");
+            
+            if (rd1.checked == true) {
+                $('#mytable').click(function (e) {
+                    var whole;
+                    var $this = $(this);
+                    if ($this.hasClass('mytable')) {
+                        $this.removeClass('mytable');
+                        
+
+                        var data = e.target.parentNode;
+                        var data1 = data.querySelectorAll("td")[0].innerText;
+                        var dataRes = data.querySelectorAll("td")[1].innerText;
+                        whole = "Stock Stock Inner Join  Product Product  On " + data1 + "." + dataRes + "=";
+
+                        document.getElementById("from").innerHTML = whole;
+                        e.preventDefault();
+                    }
+                    else {
+                        $this.addClass('mytable');
+                        setTimeout(function () {
+                            if ($this.hasClass('mytable')) {
+                                $this.removeClass('mytable');
+                                
+                                var data = e.target.parentNode;
+                                var data1 = data.querySelectorAll("td")[0].innerText;
+                                var dataRes1 = data.querySelectorAll("td")[1].innerText;
+                                document.getElementById("from").innerHTML += data1 + "." + dataRes1;
+
+                                e.preventDefault();
+                            }
+                        }, 500);
+                    }
+                   
+                });
+               
+
+
+            }
+            else if (rd2.checked == true) {
+                $('#mytable').click(function (e) {
+
+                    var $this = $(this);
+                    if ($this.hasClass('mytable')) {
+                        $this.removeClass('mytable');
+                       
+
+                        var data = e.target.parentNode;
+                        var data1 = data.querySelectorAll("td")[0].innerText;
+                        var dataRes = data.querySelectorAll("td")[1].innerText;
+                        var whole = "Stock Stock left Join  Product Product  On " + data1 + "." + dataRes + "=";
+
+                        document.getElementById("from").innerHTML = whole;
+                        $this.removeClass('mytable');
+                        e.preventDefault();
+
+                    }
+                    else {
+                        $this.addClass('mytable');
+                        setTimeout(function () {
+                            if ($this.hasClass('mytable')) {
+                                $this.removeClass('mytable');
+                                
+                                var data = e.target.parentNode;
+                                var data1 = data.querySelectorAll("td")[0].innerText;
+                                var dataRes1 = data.querySelectorAll("td")[1].innerText;
+                                document.getElementById("from").innerHTML += data1 + "." + dataRes1;
+                                $this.removeClass('mytable');
+                                e.preventDefault();
+                            }
+                        }, 500);
+                    }
+                  
+                });
+
+
+
+            }
+
+
+            else
+            {
+                alert("Select Col")
+                $('#mytable').click(function (e) {
+                    var whole;
+                    var $this = $(this);
+                    if ($this.hasClass('mytable')) {
+                        $this.removeClass('mytable');
+                      
+
+                        var data = e.target.parentNode;
+                        var data1 = data.querySelectorAll("td")[0].innerText;
+                        var dataRes = data.querySelectorAll("td")[1].innerText;
+                        whole = "Stock Stock right Join  Product Product  On " + data1 + "." + dataRes + "=";
+
+                        document.getElementById("from").innerHTML = whole;
+                        e.preventDefault();
+                    }
+                    else {
+                        $this.addClass('mytable');
+                        setTimeout(function () {
+                            if ($this.hasClass('mytable')) {
+                                $this.removeClass('mytable');
+                               
+                               var data = e.target.parentNode;
+                                var data1 = data.querySelectorAll("td")[0].innerText;
+                                var dataRes1 = data.querySelectorAll("td")[1].innerText;
+                                document.getElementById("from").innerHTML += data1 + "." + dataRes1;
+
+                                e.preventDefault();
+                            }
+                        }, 500);
+                    }
+                });
+
+
+            }
+        });
+    
+           
+        
+               $("#reloder").click(function () {
+            
+                    $("#fromm").load(" #fromm");
+                    alert("button refreshed");
+                });
+    
+
+
+    });
+
+
+
+
+</script>
+

@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="InventoryModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Product">
+    <Key>
+      <PropertyRef Name="ProductId" />
+    </Key>
+    <Property Name="ProductId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProductName" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+    <Property Name="ProductType" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+    <Property Name="ProductManufacture" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+    <NavigationProperty Name="Stocks" Relationship="Self.FK_Stock_Product" FromRole="Product" ToRole="Stock" />
+  </EntityType>
+  <EntityType Name="Stock">
+    <Key>
+      <PropertyRef Name="StockId" />
+    </Key>
+    <Property Name="StockId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProductId" Type="Int32" />
+    <Property Name="ProductQty" Type="Int32" />
+    <Property Name="Productprice" Type="Single" />
+    <Property Name="StockDate" Type="DateTime" Precision="0" />
+    <NavigationProperty Name="Product" Relationship="Self.FK_Stock_Product" FromRole="Stock" ToRole="Product" />
+  </EntityType>
+  <Association Name="FK_Stock_Product">
+    <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
+    <End Role="Stock" Type="Self.Stock" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="ProductId" />
+      </Principal>
+      <Dependent Role="Stock">
+        <PropertyRef Name="ProductId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="InventoryEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Products" EntityType="Self.Product" />
+    <EntitySet Name="Stocks" EntityType="Self.Stock" />
+    <AssociationSet Name="FK_Stock_Product" Association="Self.FK_Stock_Product">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="Stock" EntitySet="Stocks" />
+    </AssociationSet>
+    <FunctionImport Name="Select_Table" ReturnType="Collection(InventoryModel.Select_Table_Result)">
+      <Parameter Name="tableName" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Select_Col">
+      <Parameter Name="columnname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Get_Col1" ReturnType="Collection(InventoryModel.Get_Col1_Result)">
+      <Parameter Name="Column" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Get_Col" ReturnType="Collection(InventoryModel.Get_Col_Result)">
+      <Parameter Name="columnname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Fetch_Col" ReturnType="Collection(InventoryModel.Fetch_Col_Result)">
+      <Parameter Name="Column" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Where_Cond" ReturnType="Collection(InventoryModel.Where_Cond_Result)">
+      <Parameter Name="ID" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Fetch_Col1">
+      <Parameter Name="Column" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Final_Query">
+      <Parameter Name="ColumnName" Mode="In" Type="String" />
+      <Parameter Name="var" Mode="In" Type="String" />
+      <Parameter Name="data" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Demo_proc" ReturnType="Collection(InventoryModel.Demo_proc_Result)">
+      <Parameter Name="whereClause" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="Demo_whe">
+      <Parameter Name="var" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="SelectCol1" ReturnType="Collection(InventoryModel.SelectCol1_Result)">
+      <Parameter Name="tableName" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="AllJoin">
+      <Parameter Name="colName" Mode="In" Type="String" />
+      <Parameter Name="tableName" Mode="In" Type="String" />
+      <Parameter Name="whereClause" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="AllOne">
+      <Parameter Name="colName" Mode="In" Type="String" />
+      <Parameter Name="tableName" Mode="In" Type="String" />
+      <Parameter Name="whereClause" Mode="In" Type="String" />
+    </FunctionImport>
+  </EntityContainer>
+  <ComplexType Name="Select_Table_Result">
+    <Property Type="String" Name="COLUMN_NAME" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="DATA_TYPE" Nullable="true" MaxLength="128" />
+  </ComplexType>
+  <ComplexType Name="Get_Col_Result" />
+  <ComplexType Name="Get_Col1_Result" />
+  <ComplexType Name="Fetch_Col_Result" />
+  <ComplexType Name="Where_Cond_Result">
+    <Property Type="Int32" Name="StockId" Nullable="false" />
+    <Property Type="Int32" Name="ProductId" Nullable="true" />
+    <Property Type="Int32" Name="ProductQty" Nullable="true" />
+    <Property Type="Single" Name="Productprice" Nullable="true" />
+    <Property Type="DateTime" Name="StockDate" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="Demo_proc_Result" />
+  <ComplexType Name="SelectCol1_Result">
+    <Property Type="String" Name="TABLE_NAME" Nullable="false" MaxLength="128" />
+    <Property Type="String" Name="COLUMN_NAME" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="DATA_TYPE" Nullable="true" MaxLength="128" />
+  </ComplexType>
+</Schema>
